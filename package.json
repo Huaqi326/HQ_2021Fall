@@ -1,0 +1,22 @@
+{
+  "name": "hq_2021fall",
+  "version": "1.0.0",
+  "description": "Repo from class.  Huaqi Zhang",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Huaqi326/HQ_2021Fall.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "4.17.1"
+  }
+}
