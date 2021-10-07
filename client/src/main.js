@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import 'bulma'
 import App from './App.vue'
 import router from './router'
 
