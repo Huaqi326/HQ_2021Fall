@@ -1,8 +1,8 @@
 <template>
-    <div class="section" @submit.prevent="login">
-        <div class="field">
+  <form class="section" @submit.prevent="login()">
+      <div class="field">
         <p class="control has-icons-left has-icons-right">
-            <input class="input" type="email" placeholder="Email" v-model="email">
+            <input class="input" type="text" placeholder="Email" v-model="email">
             <span class="icon is-small is-left">
             <i class="fas fa-envelope"></i>
             </span>
@@ -26,22 +26,20 @@
             </button>
         </p>
         </div>
-    </div>
+  </form>
 </template>
 
 <script>
-import Session from '../services/session.js';
-
+import Session from "../services/session";
 export default {
-    data: () => ({
+    data: ()=>({
         email: null,
         password: null,
         Session
     }),
     methods: {
         login(){
-            console.log(this.email)
-            this.Session.login(this.email, this.password);
+            this.Session.Login(this.email, this.password);
         }
     }
 }
