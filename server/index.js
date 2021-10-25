@@ -22,11 +22,14 @@
 
 const express = require('express');
 const path = require('path');
+require('dotenv').config();
+
+console.log(`The best class at New Paltz is ${process.env.BEST_CLASS}`);
 
 const usersController = require('./controllers/users');
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app
   // .get('*',(req, res, next) => {
@@ -39,12 +42,12 @@ app
   // .get('/newpaltz',(req, res) => {
   //   res.send("Hello New Paltz!")
   // })
-  .use("/", express.static(path.join(__dirname, "../docs")))
+  .use('/', express.static(path.join(__dirname, '../docs')))
   .use('/users',usersController)
 
 app
   .get('*', (req,res) => {
-    res.sendFile(path.join(__dirname, "../docs/index.html"))
+    res.sendFile(path.join(__dirname, '../docs/index.html'))
   })
 
 app.listen(port, () => {
