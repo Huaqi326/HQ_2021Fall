@@ -81,3 +81,4 @@ module.exports.Delete = function Delete(post_id) {
     list.splice(post_id, 1);
     return post;
 } 
+module.exports.Search = q => list.filter(z => z.caption.includes(q))
