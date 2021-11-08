@@ -43,6 +43,7 @@ app
   // .get('/newpaltz',(req, res) => {
   //   res.send("Hello New Paltz!")
   // })
+
   .use('/', express.static(path.join(__dirname, '../docs')))
   .use('/users',usersController)
   .use('/posts', postsController)
