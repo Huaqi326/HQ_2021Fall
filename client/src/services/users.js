@@ -1,5 +1,4 @@
-/* B"H
-*/
+ 
 
 const list = [
     { 

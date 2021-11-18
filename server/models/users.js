@@ -1,5 +1,4 @@
-/* B"H
-*/
+ 
 const bcrypt = require('bcrypt');
 const { ObjectId } = require('bson');
 const { client } = require('./mongo');
