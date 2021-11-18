@@ -1,5 +1,11 @@
+/* B"H
+*/
 const bcrypt = require('bcrypt');
-const { result } = require('lodash');
+const { ObjectId } = require('bson');
+const { client } = require('./mongo');
+
+const collection = client.db(process.env.MONGO_DB).collection('users');
+module.exports.collection = collection;
 
 const list = [
     { 
@@ -42,60 +48,53 @@ const list = [
 
 ];
 
-module.exports.GetAll = function GetAll() { return list; }
+module.exports.GetAll = function GetAll() { return collection.find().toArray() ; }
 
-module.exports.Get = user_id => list[user_id]; 
+module.exports.Get = user_id => collection.findOne({_id: new ObjectId(user_id)}) 
 
-module.exports.GetByHandle = function GetByHandle(handle) { return ({ ...list.find( x => x.handle == handle ), password: undefined }); } 
+module.exports.GetByHandle = (handle) => collection.findOne({ handle }).then(x=> ({ ...x, password: undefined }));
 
-module.exports.Add = function Add(user) {
+module.exports.Add = async function Add(user) {
     if(!user.firstName){
          return Promise.reject( { code: 422, msg: "First Name is required" } )
     }
 
-    return bcrypt.hash(user.password, +process.env.SALT_ROUNDS)
+    const hash = await bcrypt.hash(user.password, +process.env.SALT_ROUNDS)
     
-    .then(hash => {
         console.log({
             user, salt: process.env.SALT_ROUNDS, hash
         })
         
         user.password = hash;
 
-        list.push(user);
+        const user2 = await collection.insertOne(user);
+        user._id = user2.insertedId;
 
         return { ...user, password: undefined };
-    });
 }
 
 
-module.exports.Update = function Update(user_id, user) {
-    const oldObj = list[user_id];
-    if(user.firstName){
-        oldObj.firstName = user.firstName;
-    }
-    if(user.lastName){
-        oldObj.lastName = user.lastName;
-    }
-    if(user.handle){
-        oldObj.handle = user.handle;
-    }
-    if(user.pic){
-        oldObj.pic = user.pic;
-    }
-    //list[user_id] = newObj ;
-    return { ...oldObj, password: undefined };
+module.exports.Update = async function Update(user_id, user) {
+
+    const results = await collection.findOneAndUpdate(
+        {_id: new ObjectId(user_id) }, 
+        { $set: user },
+        { returnDocument: 'after'}
+    );
+    console.log({ user_id, results });
+        
+    return { ...results.value, password: undefined };
 }
 
-module.exports.Delete = function Delete(user_id) {
-    const user = list[user_id];
-    list.splice(user_id, 1);
-    return user;
+module.exports.Delete = async function Delete(user_id) {
+    const results = await collection.findOneAndDelete({_id: new ObjectId(user_id) })
+
+    return results.value;
 }
 
 module.exports.Login = async function Login(handle, password){
     console.log({ handle, password})
-    const user = list.find(x=> x.handle == handle);
+    const user = await collection.findOne({ handle });
     if(!user){
         return Promise.reject( { code: 401, msg: "Sorry there is no user with that handle" });
     }
@@ -105,16 +104,16 @@ module.exports.Login = async function Login(handle, password){
     if( ! result ){
         throw { code: 401, msg: "Wrong Password" } ;
     }
-
+    
     const data = { ...user, password: undefined };
-
+    
     return { user: data };
+
+    
 }
 
-module.exports.Async = async() => {
-    console.log("111");
-
-    await Promise.resolve();
-
-    console.log("222");
+module.exports.Seed = async ()=>{
+    for (const x of list) {
+        await module.exports.Add(x)
+    }
 }

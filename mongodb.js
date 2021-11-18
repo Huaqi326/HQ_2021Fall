@@ -1,22 +1,18 @@
-const { find } = require('lodash');
 const { MongoClient } = require('mongodb');
+require('dotenv').config();
 
 async function main() {
-    const uri = "mongodb+srv://HQ:D9Y4waNEiMK807bk@cluster0.mioeg.mongodb.net/Cluster0?retryWrites=true&w=majority";
+    const uri = `mongodb+srv://HQ:${process.env.MONGO_PASS}@cluster0.mioeg.mongodb.net/Cluster0?retryWrites=true&w=majority`;
 
     const client = new MongoClient(uri);
 
     try {
         await client.connect();
 
-        await createMultipleListings(client, [{
+        await createListing(client, {
             name:"HQ",
             summary:"summary"
-        },
-        {
-            name:"zihao",
-            summary:"summary"
-        }])
+        })
     } catch (e) {
         console.error(e);
     } finally{
@@ -70,7 +66,7 @@ async function findListingsWithMinimumBBAMRR
     minNumberOfBathrooms = 0,
     maxNumberOfResults = Number.MAX_SAFE_INTEGER
 } = {}) {
-    const cursor = client.db("sample_airbnb").collection("listingsAndReviews").find(
+    const cursor = client.db("sample_airbnb").collection("listingsAndReviews").findMany(
         {
             bedrooms: { $gte: minNumberOfBedroomds},
             bathrooms: { $gte: minNumberOfBathrooms}
@@ -110,3 +106,19 @@ async function listDatabases(client) {
         console.log(`- ${db.name}`);
     })
 }
+
+
+// const { MongoClient } = require('mongodb');
+// const uri = `mongodb+srv://HQ:${process.env.MONGO_PASS}@cluster0.mioeg.mongodb.net/Cluster0?retryWrites=true&w=majority`;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// // client.connect(err => {
+// //   const collection = client.db("test").collection("devices");
+// //   // perform actions on the collection object
+// //   client.close();
+// // });
+
+// const isConnected = client.connect();
+
+// module.exports = {
+//     client
+// }
